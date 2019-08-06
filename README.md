@@ -1,4 +1,5 @@
-Math for Games
+This repo is a general purpose collection of Math for Games that I commonly use.
+
 With examples for WebGL in Javascript
 
 + Geometry
