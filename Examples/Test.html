@@ -2,11 +2,33 @@
     <head>
         <title>Minimal WebGL Example</title>
         <style>
-            body { margin: 0; }
-            canvas { width: 100%; height: 100% }
+        body {
+            margin: 0;
+        }
+        canvas {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }.container {
+            position: relative;
+            overflow: none;
+        }
+
+        #divcontainer {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            overflow: hidden;
+        }.floating-div {
+            position: absolute;
+        }
         </style>
     </head>
     <body>
+        <div id="divcontainer"></div>
     </body>
 
     <script src="three.min.js"></script>
@@ -15,9 +37,11 @@
         var camera = null;
         var renderer = null;
         var clock = null;
+        var div = null;
+        var cube = null;
 
-        
         window.onload = () => {
+
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 1000 );
             camera.position.set(0, 0, 5);
@@ -32,9 +56,21 @@
             renderer.setSize( window.innerWidth, window.innerHeight );
             document.body.appendChild( renderer.domElement );
 
+            var divContainerElement = document.getElementById("divcontainer");
+
+            div = document.createElement("div");
+            div.className = "floating-div";
+
+            var textNode = document.createTextNode("Floating Element!!!");
+            div.appendChild(textNode);
+            divContainerElement.appendChild(div);
+            document.body.appendChild(div);
+            console.log(div);
+
+
             var geometry = new THREE.BoxGeometry( 1, 1, 1 );
             var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-            var cube = new THREE.Mesh( geometry, material );
+            cube = new THREE.Mesh( geometry, material );
             scene.add( cube );
             console.log(cube);
 
@@ -51,6 +87,20 @@
 
         function update() {
             requestAnimationFrame( update );
+
+            let pos = new THREE.Vector3();
+            pos = pos.setFromMatrixPosition(cube.matrixWorld);
+            pos.project(camera);
+
+            let widthHalf = window.innerWidth / 2;
+            let heightHalf = window.innerHeight / 2;
+
+            pos.x = (pos.x * widthHalf) + widthHalf;
+            pos.y = - (pos.y * heightHalf) + heightHalf;
+            pos.z = 0;
+
+            div.style.left = pos.x;
+            div.style.top = pos.y;
 
             renderer.render( scene, camera );
         }
